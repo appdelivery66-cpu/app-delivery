@@ -1,29 +1,29 @@
 /**
- * CONFIGURAÇÃO Rápida DE MARCA (BRANDING)
- * Altere os valores abaixo para cada novo cliente.
+ * CONFIGURACIÓN Rápida DE MARCA (BRANDING)
+ * Cambie los valores a continuación para cada nuevo cliente.
  */
 
 export const BRANDING = {
-    // Identidade Visual
-    name: "Burguer Master", // Nome do Restaurante
-    whatsapp: "5511999999999", // Número do WhatsApp (apenas números)
-    logo: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=500&q=80", // URL do Logo
-    address: "Rua Exemplo, 123 - Centro", // Endereço físico
-    pixKey: "seu-email@pix.com", // Chave PIX do cliente
-    deliveryFee: 5.0, // Taxa de entrega padrão
+    // Identidad Visual
+    name: "Burger Master", // Nombre del Restaurante
+    whatsapp: "5511999999999", // Número de WhatsApp (solo números)
+    logo: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=500&q=80", // URL del Logo
+    address: "Calle Ejemplo, 123 - Centro", // Dirección física
+    pixKey: "tu-email@pix.com", // Clave de pago/PIX del cliente
+    deliveryFee: 5.0, // Tasa de entrega estándar
 
-    // Cores (Hexadecimal)
-    // DICA: Mude no src/app/globals.css para refletir no site inteiro
+    // Colores (Hexadecimal)
+    // DICA: Cambie en src/app/globals.css para reflejar en todo el sitio
     colors: {
-        primary: "#E63946", // Cor principal (Botões, ícones)
-        secondary: "#FFB703", // Cor secundária
+        primary: "#E63946", // Color principal (Botones, iconos)
+        secondary: "#FFB703", // Color secundario
     },
 
-    // Redes Sociais e Mapas
-    googleMapsUrl: "https://goo.gl/maps/exemplo",
-    instagramUrl: "https://instagram.com/pizzaria_exemplo",
+    // Redes Sociales y Mapas
+    googleMapsUrl: "https://goo.gl/maps/ejemplo",
+    instagramUrl: "https://instagram.com/restaurante_ejemplo",
 
-    // Horários de Funcionamento (Formato 24h)
+    // Horarios de Funcionamiento (Formato 24h)
     openingHours: {
         monday: { open: "18:00", close: "23:00", closed: false },
         tuesday: { open: "18:00", close: "23:00", closed: false },

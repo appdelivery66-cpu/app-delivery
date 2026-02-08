@@ -1,43 +1,43 @@
-# 📋 CONTROLE DE CLIENTES - DELIVERY APP
+# 📋 CONTROL DE CLIENTES - APP DE DELIVERY
 
-Use este arquivo para organizar os dados de cada cliente que você criar. 
-Lembre-se: Cada cliente deve ter seu próprio GIST_ID para que os produtos não se misturem!
+Utilice este archivo para organizar los datos de cada cliente que cree.
+Recuerde: ¡Cada cliente debe tener su propio GIST_ID para que los productos no se mezclen!
 
 ---
 
-## 🚀 CLIENTE ATUAL (Modelo Mestre)
-**Nome:** (Ex: Burguer Master)
-**GIST_ID:** (Copie do seu arquivo .env.local)
-**GitHub:** (Ex: https://github.com/karpaa4545-bot/delivery-app-template)
-**Link do Site:** (Ex: https://delivery-app-template.vercel.app)
+## 🚀 CLIENTE ACTUAL (Modelo Maestro)
+**Nombre:** (Ej: Burger Master)
+**GIST_ID:** (Copie de su archivo .env.local)
+**GitHub:** (Ej: https://github.com/karpaa4545-bot/delivery-app-template)
+**Enlace del Sitio:** (Ej: https://delivery-app-template.vercel.app)
 
 ---
 
 ## 👤 CLIENTE 01
-**Nome:** _______________________
+**Nombre:** _______________________
 **GIST_ID:** _____________________
 **GitHub:** ______________________
-**Link do Site:** ________________
+**Enlace del Sitio:** ________________
 
 ---
 
 ## 👤 CLIENTE 02
-**Nome:** _______________________
+**Nombre:** _______________________
 **GIST_ID:** _____________________
 **GitHub:** ______________________
-**Link do Site:** ________________
+**Enlace del Sitio:** ________________
 
 ---
 
 ## 👤 CLIENTE 03
-**Nome:** _______________________
+**Nombre:** _______________________
 **GIST_ID:** _____________________
 **GitHub:** ______________________
-**Link do Site:** ________________
+**Enlace del Sitio:** ________________
 
 ---
 
-### 💡 Dicas de Organização:
-1. Sempre que criar um novo Gist no GitHub, copie o ID final da URL e cole aqui.
-2. Ao subir para a Vercel, use o GIST_ID correspondente deste arquivo.
-3. Para atualizar um cliente antigo, use este código atual mas troque o GIST_ID pelo dele.
+### 💡 Consejos de Organización:
+1. Siempre que cree un nuevo Gist en GitHub, copie el ID final de la URL y péguelo aquí.
+2. Al subir a Vercel, use el GIST_ID correspondiente de este archivo.
+3. Para actualizar un cliente antiguo, use este código actual pero cambie el GIST_ID por el suyo.

@@ -95,9 +95,9 @@ export default function DigitalMenu() {
     const totalPrice = subtotal + (neighborhood?.fee || 0);
 
     const getLocation = () => {
-        setLocationStatus("Obtendo localização...");
+        setLocationStatus("Obteniendo ubicación...");
         if (!navigator.geolocation) {
-            setLocationStatus("Seu navegador não suporta GPS.");
+            setLocationStatus("Su navegador no soporta GPS.");
             return;
         }
         navigator.geolocation.getCurrentPosition(
@@ -106,10 +106,10 @@ export default function DigitalMenu() {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
                 });
-                setLocationStatus("Localização obtida com sucesso!");
+                setLocationStatus("¡Ubicación obtenida con éxito!");
             },
             () => {
-                setLocationStatus("Erro ao obter localização. Verifique as permissões.");
+                setLocationStatus("Error al obtener la ubicación. Verifique los permisos.");
             }
         );
     };
@@ -117,32 +117,33 @@ export default function DigitalMenu() {
     const formatWhatsAppMessage = () => {
         let message = `*Pedido - ${data.store.name}*\n\n`;
         cart.forEach(item => {
-            message += `• ${item.quantity}x ${item.product.name} - R$ ${(item.product.price * item.quantity).toFixed(2)}\n`;
+            const itemPrice = (item.product.price || 0) * item.quantity;
+            message += `• ${item.quantity}x ${item.product.name} - Gs. ${itemPrice.toLocaleString('es-PY')}\n`;
         });
-        message += `\n*Subtotal: R$ ${subtotal.toFixed(2)}*`;
+        message += `\n*Subtotal: Gs. ${(subtotal || 0).toLocaleString('es-PY')}*`;
         if (neighborhood) {
-            message += `\n*Entrega (${neighborhood.name}): R$ ${neighborhood.fee.toFixed(2)}*`;
+            message += `\n*Entrega (${neighborhood.name}): Gs. ${(neighborhood.fee || 0).toLocaleString('es-PY')}*`;
         }
-        message += `\n*Total: R$ ${totalPrice.toFixed(2)}*\n\n`;
+        message += `\n*Total: Gs. ${(totalPrice || 0).toLocaleString('es-PY')}*\n\n`;
 
         if (location) {
-            message += `*Localização GPS:* https://maps.google.com/?q=${location.lat},${location.lng}\n`;
+            message += `*Ubicación GPS:* https://maps.google.com/?q=${location.lat},${location.lng}\n`;
         } else {
-            message += `*Endereço:* (Cliente não enviou GPS)\n`;
+            message += `*Dirección:* (El cliente no envió GPS)\n`;
         }
 
         if (neighborhood) {
-            message += `*Bairro:* ${neighborhood.name}\n`;
+            message += `*Barrio:* ${neighborhood.name}\n`;
         }
 
         if (observation) {
-            message += `\n*Observação / Mesa:* ${observation}\n`;
+            message += `\n*Observación / Mesa:* ${observation}\n`;
         }
 
-        message += `*Forma de Pagamento:* ${paymentMethod === 'PIX' ? 'PIX' : paymentMethod === 'CARD' ? 'Cartão (Levar Maquininha)' : 'Dinheiro'}\n`;
+        message += `*Forma de Pago:* ${paymentMethod === 'PIX' ? 'Transferencia' : paymentMethod === 'CARD' ? 'Tarjeta (Llevar máquina)' : 'Efectivo'}\n`;
 
         if (paymentMethod === 'PIX') {
-            message += `\n🚨 *Atenção:* Por favor, envie o *COMPROVANTE DO PIX* logo abaixo para podermos preparar o seu pedido!`;
+            message += `\n🚨 *Atención:* ¡Por favor, envíe el *COMPROBANTE* a continuación para que podamos preparar su pedido!`;
         }
 
         return encodeURIComponent(message);
@@ -164,8 +165,8 @@ export default function DigitalMenu() {
             payment: paymentMethod,
             observation: observation,
             location: location,
-            date: new Date().toLocaleString('pt-BR'),
-            status: 'Pendente'
+            date: new Date().toLocaleString('es-ES'),
+            status: 'Pendiente'
         };
 
         try {
@@ -179,7 +180,7 @@ export default function DigitalMenu() {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || "Erro ao salvar pedido");
+                throw new Error(errorData.message || "Error al guardar el pedido");
             }
 
             const cleanPhone = data.store.whatsapp.replace(/\D/g, '');
@@ -195,7 +196,7 @@ export default function DigitalMenu() {
             console.error("Erro ao salvar pedido:", error);
 
             // Alerta o erro real para o dono saber o que falta configurar
-            alert(`Aviso: O pedido será enviado ao WhatsApp, mas não foi salvo no Painel Admin.\nMotivo: ${error.message}`);
+            alert(`Aviso: El pedido se enviará a WhatsApp, pero no se guardó en el Panel de Administrador.\nMotivo: ${error.message}`);
 
             // Mesmo com erro no Admin, abre o WhatsApp para não perder a venda
             const cleanPhone = data.store.whatsapp.replace(/\D/g, '');
@@ -238,11 +239,11 @@ export default function DigitalMenu() {
                                         "w-2 h-2 rounded-full animate-pulse",
                                         isStoreOpen() ? "bg-green-400" : "bg-red-400"
                                     )}></span>
-                                    {isStoreOpen() ? "ESTAMOS ABERTOS" : "FECHADO AGORA"}
+                                    {isStoreOpen() ? "ESTAMOS ABIERTOS" : "CERRADO AHORA"}
                                 </p>
                                 {data.store.deliveryTime && (
                                     <p className="text-[9px] text-white/70 flex items-center gap-1 font-bold">
-                                        <Clock className="w-2.5 h-2.5" /> MÉDIA: {data.store.deliveryTime}
+                                        <Clock className="w-2.5 h-2.5" /> PROMEDIO: {data.store.deliveryTime}
                                     </p>
                                 )}
                             </div>
@@ -259,7 +260,7 @@ export default function DigitalMenu() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <input
                         type="text"
-                        placeholder="O que você deseja pedir?"
+                        placeholder="¿Qué deseas pedir?"
                         className="w-full bg-white text-foreground rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-secondary shadow-inner border-none"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -321,7 +322,7 @@ export default function DigitalMenu() {
                 {filteredProducts.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-20 text-muted-foreground italic">
                         <Search className="w-12 h-12 mb-2 opacity-10" />
-                        <p>Nenhum produto encontrado...</p>
+                        <p>No se encontraron productos...</p>
                     </div>
                 ) : (
                     filteredProducts.map((product: Product) => (
@@ -339,7 +340,7 @@ export default function DigitalMenu() {
                                     <p className="text-muted-foreground text-[11px] line-clamp-2 mt-1 leading-snug">{product.description}</p>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-primary font-black text-base">R$ {product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                                    <span className="text-primary font-black text-base">Gs. {(product.price || 0).toLocaleString('es-PY')}</span>
                                     <button
                                         onClick={() => addToCart(product)}
                                         className="bg-primary text-white p-2 rounded-xl shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-90 transition-all"
@@ -367,10 +368,10 @@ export default function DigitalMenu() {
                                     {totalItems}
                                 </span>
                             </div>
-                            <span className="uppercase tracking-tight">Ver Carrinho</span>
+                            <span className="uppercase tracking-tight">Ver Carro</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="text-secondary text-lg">R$ {totalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            <span className="text-secondary text-lg">Gs. {(totalPrice || 0).toLocaleString('es-PY')}</span>
                             <ChevronRight className="w-5 h-5 opacity-50 group-hover:translate-x-1 transition-transform" />
                         </div>
                     </button>
@@ -385,7 +386,7 @@ export default function DigitalMenu() {
                         <div className="p-6 border-b flex items-center justify-between bg-muted/10">
                             <h2 className="font-bold text-xl flex items-center gap-2">
                                 <ShoppingCart className="w-6 h-6 text-primary" />
-                                Seu Carrinho
+                                Tu Carrito
                             </h2>
                             <button onClick={() => setIsCartOpen(false)} className="p-2 hover:bg-muted rounded-full transition-colors">
                                 <X className="w-6 h-6" />
@@ -398,7 +399,7 @@ export default function DigitalMenu() {
                                     <img src={item.product.image} className="w-16 h-16 rounded-xl object-cover shadow-sm" alt="" />
                                     <div className="flex-1">
                                         <h4 className="font-bold text-sm">{item.product.name}</h4>
-                                        <p className="text-primary font-bold text-sm">R$ {item.product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                                        <p className="text-primary font-bold text-sm">Gs. {(item.product.price || 0).toLocaleString('es-PY')}</p>
                                     </div>
                                     <div className="flex items-center gap-3 bg-muted/30 rounded-full px-2 py-1">
                                         <button
@@ -419,11 +420,11 @@ export default function DigitalMenu() {
                             ))}
 
                             <div className="pt-4 border-t border-dashed border-slate-200">
-                                <h4 className="font-bold text-slate-800 mb-3">Observações</h4>
+                                <h4 className="font-bold text-slate-800 mb-3">Observaciones</h4>
                                 <textarea
                                     value={observation}
                                     onChange={(e) => setObservation(e.target.value)}
-                                    placeholder="Ex: Sem cebola, ou Mesa 12..."
+                                    placeholder="Ej: Sin cebolla, o Mesa 12..."
                                     className="w-full bg-slate-50 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 min-h-[80px]"
                                 />
                             </div>
@@ -440,14 +441,14 @@ export default function DigitalMenu() {
                                     )}
                                 >
                                     <MapPin className="w-5 h-5" />
-                                    {location ? "Localização Salva!" : "Usar Minha Localização GPS"}
+                                    {location ? "¡Ubicación Guardada!" : "Usar Mi Ubicación GPS"}
                                 </button>
                                 {locationStatus && <p className="text-xs text-center text-slate-500 -mt-2 mb-4">{locationStatus}</p>}
 
-                                {/* Seleção de Bairro / Taxa de Entrega */}
+                                {/* Seleção de Barrio / Taxa de Entrega */}
                                 {data.store.deliveryFees && data.store.deliveryFees.length > 0 && (
                                     <div className="space-y-2">
-                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Selecione seu Bairro</p>
+                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Seleccione su Barrio</p>
                                         <select
                                             className="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-4 text-sm font-bold focus:border-primary focus:ring-0 transition-all cursor-pointer"
                                             value={neighborhood?.name || ""}
@@ -456,10 +457,10 @@ export default function DigitalMenu() {
                                                 setNeighborhood(selected || null);
                                             }}
                                         >
-                                            <option value="">Selecione seu bairro...</option>
+                                            <option value="">Seleccione su barrio...</option>
                                             {data.store.deliveryFees.map((f: any) => (
                                                 <option key={f.id} value={f.name}>
-                                                    {f.name} - R$ {f.fee.toFixed(2)}
+                                                    {f.name} - Gs. {(f.fee || 0).toLocaleString('es-PY')}
                                                 </option>
                                             ))}
                                         </select>
@@ -468,7 +469,7 @@ export default function DigitalMenu() {
                             </div>
 
                             <div className="pt-4 border-t border-dashed border-slate-200">
-                                <h4 className="font-bold text-slate-800 mb-3">Forma de Pagamento</h4>
+                                <h4 className="font-bold text-slate-800 mb-3">Forma de Pago</h4>
                                 <div className="space-y-2">
                                     {data.store.pixKey && (
                                         <label className={cn(
@@ -483,7 +484,7 @@ export default function DigitalMenu() {
                                                 onChange={() => setPaymentMethod('PIX')}
                                             />
                                             <div className="flex-1">
-                                                <span className="font-bold block">PIX</span>
+                                                <span className="font-bold block">Transferencia</span>
                                                 {paymentMethod === 'PIX' && (
                                                     <div className="mt-2 space-y-2 animate-in fade-in slide-in-from-top-1 duration-300">
                                                         <div className="flex items-center gap-2 bg-white border rounded-lg p-2">
@@ -492,7 +493,7 @@ export default function DigitalMenu() {
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
                                                                     navigator.clipboard.writeText(data.store.pixKey || '');
-                                                                    alert("Chave PIX copiada!");
+                                                                    alert("¡Clave copiada!");
                                                                 }}
                                                                 className="text-primary hover:bg-primary/10 p-1 rounded transition-colors"
                                                             >
@@ -501,11 +502,11 @@ export default function DigitalMenu() {
                                                         </div>
                                                         <p className="text-[11px] text-green-600 font-bold flex items-center gap-1">
                                                             <Check className="w-3 h-3" />
-                                                            Envie o comprovante no WhatsApp após finalizar!
+                                                            ¡Envíe el comprobante por WhatsApp al finalizar!
                                                         </p>
                                                         {data.store.pixQrCode && (
                                                             <div className="flex justify-center bg-white p-2 rounded-lg border border-slate-100">
-                                                                <img src={data.store.pixQrCode} alt="QR Code PIX" className="w-32 h-32 object-contain" />
+                                                                <img src={data.store.pixQrCode} alt="QR Code" className="w-32 h-32 object-contain" />
                                                             </div>
                                                         )}
                                                     </div>
@@ -527,8 +528,8 @@ export default function DigitalMenu() {
                                                 onChange={() => setPaymentMethod('CARD')}
                                             />
                                             <div className="flex-1">
-                                                <span className="font-bold block">Cartão</span>
-                                                <span className="text-xs text-slate-500">Levamos a maquininha</span>
+                                                <span className="font-bold block">Tarjeta</span>
+                                                <span className="text-xs text-slate-500">Llevamos la máquina</span>
                                             </div>
                                         </label>
                                     )}
@@ -546,7 +547,7 @@ export default function DigitalMenu() {
                                                 onChange={() => setPaymentMethod('CASH')}
                                             />
                                             <div className="flex-1">
-                                                <span className="font-bold block">Dinheiro / Espécie</span>
+                                                <span className="font-bold block">Efectivo</span>
                                             </div>
                                         </label>
                                     )}
@@ -558,8 +559,8 @@ export default function DigitalMenu() {
 
 
                             <div className="flex items-center justify-between text-lg">
-                                <span className="font-medium text-muted-foreground">Subtotal</span>
-                                <span className="font-black text-primary">R$ {totalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                                <span className="font-medium text-muted-foreground">Total</span>
+                                <span className="font-black text-primary">Gs. {(totalPrice || 0).toLocaleString('es-PY')}</span>
                             </div>
 
                             <button
@@ -572,14 +573,14 @@ export default function DigitalMenu() {
                                 ) : (
                                     <>
                                         <MessageCircle className="w-6 h-6" />
-                                        Finalizar no WhatsApp
+                                        Finalizar en WhatsApp
                                         <ArrowRight className="w-5 h-5" />
                                     </>
                                 )}
                             </button>
 
                             <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest font-bold">
-                                O pedido será enviado direto para o nosso WhatsApp
+                                El pedido se enviará directo a nuestro WhatsApp
                             </p>
                         </div>
                     </div>

@@ -22,8 +22,8 @@ export default function AdminDashboard() {
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
-        // SENHA DEFINIDA AQUI: "KARPA4545"
-        if (passwordInput === "KARPA4545") {
+        // SENHA DEFINIDA AQUI: "Cliente1@"
+        if (passwordInput === "Cliente1@") {
             setIsAuthenticated(true);
         } else {
             setLockError(true);
@@ -56,14 +56,14 @@ export default function AdminDashboard() {
     const addCategory = () => {
         const newCat: Category = {
             id: Math.random().toString(36).substr(2, 9),
-            name: "Nova Categoria",
+            name: "Nueva Categoría",
             icon: "Utensils"
         };
         setData((prev: any) => ({ ...prev, categories: [...prev.categories, newCat] }));
     };
 
     const deleteCategory = (id: string) => {
-        if (confirm("Tem certeza? Isso pode afetar os produtos vinculados a esta categoria.")) {
+        if (confirm("¿Estás seguro? Esto puede afectar los productos vinculados a esta categoría.")) {
             setData((prev: any) => ({
                 ...prev,
                 categories: prev.categories.filter((c: Category) => c.id !== id)
@@ -81,13 +81,13 @@ export default function AdminDashboard() {
 
             if (!res.ok) {
                 const errorData = await res.json().catch(() => ({}));
-                throw new Error(errorData.error || 'Falha no upload');
+                throw new Error(errorData.error || 'Error al subir la imagen');
             }
 
             const result = await res.json();
             callback(result.url);
         } catch (error: any) {
-            alert(`Aviso: ${error.message}\n\nDica: Copie o link da imagem e cole direto no campo de texto.`);
+            alert(`Aviso: ${error.message}\n\nConsejo: Copie el enlace de la imagen y péguelo directamente en el campo de texto.`);
         } finally {
             setUploading(null);
         }
@@ -103,14 +103,14 @@ export default function AdminDashboard() {
             });
 
             if (res.ok) {
-                alert("Alterações salvas com sucesso!");
+                alert("!Cambios guardados con éxito!");
             } else {
                 const errorData = await res.json().catch(() => ({ message: res.statusText }));
-                alert(`Erro ao salvar: ${errorData.message || "Erro desconhecido"}`);
+                alert(`Error al guardar: ${errorData.message || "Error desconocido"}`);
             }
         } catch (error: any) {
             console.error("Save error:", error);
-            alert(`Erro de conexão: ${error.message}`);
+            alert(`Error de conexión: ${error.message}`);
         } finally {
             setSaving(false);
         }
@@ -126,8 +126,8 @@ export default function AdminDashboard() {
     const addProduct = () => {
         const newProduct: Product = {
             id: Math.random().toString(36).substr(2, 9),
-            name: "Novo Produto",
-            description: "Descrição aqui",
+            name: "Nuevo Producto",
+            description: "Descripción aquí",
             price: 0,
             image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500",
             category: activeAdminCategory === "all" ? data.categories[0].id : activeAdminCategory,
@@ -137,7 +137,7 @@ export default function AdminDashboard() {
     };
 
     const deleteProduct = (id: string) => {
-        if (confirm("Tem certeza que deseja excluir?")) {
+        if (confirm("¿Estás seguro de que deseas eliminar?")) {
             setData((prev: any) => ({
                 ...prev,
                 products: prev.products.filter((p: Product) => p.id !== id)
@@ -159,15 +159,15 @@ export default function AdminDashboard() {
                         <div className="bg-primary/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
                             <Utensils className="w-8 h-8 text-primary" />
                         </div>
-                        <h1 className="font-bold text-2xl text-slate-800">Painel do Restaurante</h1>
-                        <p className="text-slate-500 text-sm">Digite sua senha para acessar</p>
+                        <h1 className="font-bold text-2xl text-slate-800">Panel del Restaurante</h1>
+                        <p className="text-slate-500 text-sm">Ingrese su contraseña para acceder</p>
                     </div>
 
                     <div className="space-y-2">
                         <input
                             type="password"
                             autoFocus
-                            placeholder="Senha de acesso"
+                            placeholder="Contraseña de acceso"
                             value={passwordInput}
                             onChange={(e) => setPasswordInput(e.target.value)}
                             className={cn(
@@ -175,7 +175,7 @@ export default function AdminDashboard() {
                                 lockError ? "border-red-500 bg-red-50 text-red-500 animate-shake" : "border-slate-100 focus:border-primary focus:ring-4 focus:ring-primary/10"
                             )}
                         />
-                        {lockError && <p className="text-xs text-center text-red-500 font-bold">Senha incorreta</p>}
+                        {lockError && <p className="text-xs text-center text-red-500 font-bold">Contraseña incorrecta</p>}
                     </div>
 
                     <button
@@ -195,7 +195,7 @@ export default function AdminDashboard() {
             <aside className="w-full md:w-64 bg-slate-900 text-white p-6 flex flex-col gap-8 shadow-xl">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center font-black">AD</div>
-                    <h1 className="font-black text-xl tracking-tight uppercase">Painel App</h1>
+                    <h1 className="font-black text-xl tracking-tight uppercase">Panel App</h1>
                 </div>
 
                 <nav className="flex flex-col gap-2 flex-1">
@@ -218,7 +218,7 @@ export default function AdminDashboard() {
                         )}
                     >
                         <Utensils className="w-5 h-5" />
-                        Cardápio
+                        Menú
                         <ChevronRight className={cn("ml-auto w-4 h-4 transition-transform", activeTab === 'products' ? "rotate-90" : "")} />
                     </button>
                     <button
@@ -229,7 +229,7 @@ export default function AdminDashboard() {
                         )}
                     >
                         <LayoutDashboard className="w-5 h-5" />
-                        Categorias
+                        Categorías
                         <ChevronRight className={cn("ml-auto w-4 h-4 transition-transform", activeTab === 'categories' ? "rotate-90" : "")} />
                     </button>
                     <button
@@ -240,7 +240,7 @@ export default function AdminDashboard() {
                         )}
                     >
                         <Settings className="w-5 h-5" />
-                        Configurações
+                        Ajustes
                         <ChevronRight className={cn("ml-auto w-4 h-4 transition-transform", activeTab === 'config' ? "rotate-90" : "")} />
                     </button>
                     <button
@@ -257,7 +257,7 @@ export default function AdminDashboard() {
                 </nav>
 
                 <button className="flex items-center gap-3 p-4 rounded-2xl opacity-40 hover:opacity-100 hover:bg-red-500/10 text-red-400 font-bold transition-all">
-                    <LogOut className="w-5 h-5" /> Sair
+                    <LogOut className="w-5 h-5" /> Salir
                 </button>
             </aside>
 
@@ -266,13 +266,13 @@ export default function AdminDashboard() {
                 <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
                     <div>
                         <h2 className="text-3xl font-black text-slate-900 tracking-tight capitalize">
-                            {activeTab === 'orders' ? 'Pedidos Recebidos' : activeTab === 'products' ? 'Gerenciar Cardápio' : activeTab === 'categories' ? 'Gerenciar Categorias' : activeTab === 'banners' ? 'Gerenciar Banners' : 'Configurações da Loja'}
+                            {activeTab === 'orders' ? 'Pedidos Recibidos' : activeTab === 'products' ? 'Gestionar Menú' : activeTab === 'categories' ? 'Gestionar Categorías' : activeTab === 'banners' ? 'Gestionar Banners' : 'Ajustes de la Tienda'}
                         </h2>
                         <div className="flex items-center gap-2 mt-1">
-                            <p className="text-muted-foreground">Administre sua loja em tempo real.</p>
+                            <p className="text-muted-foreground">Administre su tienda en tiempo real.</p>
                             {activeTab === 'orders' && (
                                 <button onClick={fetchOrders} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold hover:bg-primary/20 transition-all uppercase">
-                                    🔄 Atualizar Lista
+                                    🔄 Actualizar Lista
                                 </button>
                             )}
                         </div>
@@ -283,30 +283,30 @@ export default function AdminDashboard() {
                         className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-2xl shadow-xl shadow-green-600/20 flex items-center justify-center gap-3 font-bold transition-all active:scale-95 disabled:opacity-50"
                     >
                         {saving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <Save className="w-5 h-5" />}
-                        SALVAR ALTERAÇÕES
+                        GUARDAR CAMBIOS
                     </button>
                 </header>
 
                 {/* EDIÇÃO RÁPIDA DO NOME - LOGO NO TOPO */}
                 <div className="mb-8 bg-primary/5 p-6 rounded-[2.5rem] border-2 border-primary/20">
                     <div className="flex items-center justify-between mb-2 px-2">
-                        <label className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">Nome do Aplicativo / Restaurante</label>
+                        <label className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">Nombre de la Aplicación / Restaurante</label>
                         <button
                             onClick={() => {
-                                if (confirm("Restaurar nome padrão do sistema?")) {
+                                if (confirm("¿Restaurar nombre por defecto del sistema?")) {
                                     setData({ ...data, store: { ...data.store, name: BRANDING.name } });
                                 }
                             }}
                             className="text-[10px] bg-primary text-white px-3 py-1 rounded-full font-bold hover:scale-105 transition-transform"
                         >
-                            Resetar para o Código
+                            Resetear al Código
                         </button>
                     </div>
                     <input
                         value={data.store.name}
                         onChange={(e) => setData({ ...data, store: { ...data.store, name: e.target.value } })}
                         className="w-full bg-white border-none rounded-3xl p-5 font-black text-2xl text-slate-800 shadow-sm focus:ring-4 focus:ring-primary/20 outline-none"
-                        placeholder="Escreva o nome aqui..."
+                        placeholder="Escriba el nombre aquí..."
                     />
                 </div>
 
@@ -314,7 +314,7 @@ export default function AdminDashboard() {
                     <div className="space-y-6">
                         {(!data.orders || data.orders.length === 0) ? (
                             <div className="bg-white p-20 rounded-[3rem] text-center border border-dashed border-slate-200">
-                                <p className="text-slate-400 font-bold">Nenhum pedido recebido ainda.</p>
+                                <p className="text-slate-400 font-bold">Aún no se han recibido pedidos.</p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 gap-4">
@@ -326,10 +326,10 @@ export default function AdminDashboard() {
                                                 <span className="text-xs text-slate-400">{order.date}</span>
                                             </div>
                                             <div className="font-black text-slate-800 text-lg">
-                                                {order.items.length} itens - R$ {order.total.toFixed(2)}
+                                                {order.items.length} productos - Gs. {order.total.toLocaleString('es-PY')}
                                             </div>
                                             <div className="text-sm text-slate-500 font-medium">
-                                                Pagamento: <span className="text-primary font-bold uppercase">{order.payment}</span>
+                                                Pago: <span className="text-primary font-bold uppercase">{order.payment}</span>
                                             </div>
                                         </div>
 
@@ -346,7 +346,7 @@ export default function AdminDashboard() {
 
                                             {/* Seletor de Status */}
                                             <select
-                                                value={order.status || 'Pendente'}
+                                                value={order.status || 'Pendiente'}
                                                 onChange={(e) => {
                                                     const newStatus = e.target.value;
                                                     const newOrders = data.orders.map((o: any) =>
@@ -357,39 +357,39 @@ export default function AdminDashboard() {
                                                     handleSave(newData);
 
                                                     // Se o status for "Saindo para Entrega", avisa no Zap
-                                                    if (newStatus === 'Saindo para Entrega') {
-                                                        const msg = encodeURIComponent(`*Olá! Seu pedido do ${data.store.name} está saindo para entrega agora!* 🛵🍔`);
+                                                    if (newStatus === 'En camino') {
+                                                        const msg = encodeURIComponent(`*¡Hola! ¡Tu pedido de ${data.store.name} está en camino ahora mismo!* 🛵🍔`);
                                                         window.open(`https://wa.me/${data.store.whatsapp.replace(/\D/g, '')}?text=${msg}`, '_blank');
                                                     }
                                                 }}
                                                 className={cn(
                                                     "text-[10px] font-bold px-3 py-2 rounded-xl border-none ring-1 ring-slate-200 focus:ring-primary/20",
-                                                    order.status === 'Pronto' ? "bg-green-50 text-green-600" :
-                                                        order.status === 'Saindo para Entrega' ? "bg-blue-50 text-blue-600" : "bg-orange-50 text-orange-600"
+                                                    order.status === 'Entregado' ? "bg-green-50 text-green-600" :
+                                                        order.status === 'En camino' ? "bg-blue-50 text-blue-600" : "bg-orange-50 text-orange-600"
                                                 )}
                                             >
-                                                <option value="Pendente">⏳ Pendente</option>
+                                                <option value="Pendiente">⏳ Pendiente</option>
                                                 <option value="Preparando">🔥 Preparando</option>
-                                                <option value="Saindo para Entrega">🛵 Saiu para Entrega</option>
-                                                <option value="Pronto">✅ Entregue</option>
+                                                <option value="En camino">🛵 En camino</option>
+                                                <option value="Entregado">✅ Entregado</option>
                                             </select>
 
                                             {/* Botão de Avaliação */}
-                                            {order.status === 'Pronto' && data.store.reviewLink && (
+                                            {order.status === 'Entregado' && data.store.reviewLink && (
                                                 <button
                                                     onClick={() => {
-                                                        const msg = encodeURIComponent(`*Oi! Esperamos que tenha gostado do seu pedido!* 😍\n\nSe puder nos avaliar no Google, ajuda muito o nosso trabalho: \n${data.store.reviewLink}`);
+                                                        const msg = encodeURIComponent(`*¡Hola! ¡Esperamos que hayas disfrutado tu pedido!* 😍\n\nSi puedes calificarnos en Google, ayuda mucho a nuestro trabajo: \n${data.store.reviewLink}`);
                                                         window.open(`https://wa.me/${data.store.whatsapp.replace(/\D/g, '')}?text=${msg}`, '_blank');
                                                     }}
                                                     className="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-xl text-xs font-bold hover:bg-yellow-200 transition-all"
                                                 >
-                                                    ⭐ Pedir Avaliação
+                                                    ⭐ Pedir Calificación
                                                 </button>
                                             )}
 
                                             <button
                                                 onClick={() => {
-                                                    if (confirm("Deseja excluir este pedido? Para sua segurança, ele será apagado permanentemente após a confirmação.")) {
+                                                    if (confirm("¿Deseas eliminar este pedido? Para su seguridad, será borrado permanentemente después de la confirmación.")) {
                                                         const newOrders = data.orders.filter((o: any) => o.id !== order.id);
                                                         const newData = { ...data, orders: newOrders };
                                                         setData(newData);
@@ -418,11 +418,11 @@ export default function AdminDashboard() {
                         </div>
 
                         <div className="space-y-1 mb-2">
-                            <p className="font-bold border-b border-black">ITENS DO PEDIDO</p>
+                            <p className="font-bold border-b border-black">PRODUCTOS DEL PEDIDO</p>
                             {selectedOrder.items.map((item: any, i: number) => (
                                 <div key={i} className="flex justify-between text-[11px]">
                                     <span>{item.quantity}x {item.name}</span>
-                                    <span>R$ {(item.price * item.quantity).toFixed(2)}</span>
+                                    <span>Gs. {(item.price * item.quantity).toLocaleString('es-PY')}</span>
                                 </div>
                             ))}
                         </div>
@@ -430,9 +430,9 @@ export default function AdminDashboard() {
                         <div className="border-t-2 border-dashed border-black pt-2 space-y-1 text-[11px]">
                             <p className="flex justify-between font-black text-[13px]">
                                 <span>TOTAL:</span>
-                                <span>R$ {selectedOrder.total.toFixed(2)}</span>
+                                <span>Gs. {selectedOrder.total.toLocaleString('es-PY')}</span>
                             </p>
-                            <p><strong>PAGAMENTO:</strong> {selectedOrder.payment}</p>
+                            <p><strong>PAGO:</strong> {selectedOrder.payment}</p>
                             {selectedOrder.observation && (
                                 <p><strong>OBS:</strong> {selectedOrder.observation}</p>
                             )}
@@ -442,14 +442,14 @@ export default function AdminDashboard() {
                         </div>
 
                         <div className="text-center mt-4 pt-4 border-t border-black">
-                            <p className="text-[10px]">Agradecemos sua preferência!</p>
+                            <p className="text-[10px]">¡Gracias por su preferencia!</p>
                         </div>
                     </div>
                 )}
 
                 {activeTab === 'products' && (
                     <div className="space-y-6">
-                        {/* Category Selector for Admin */}
+                        {/* Selector de Categoría para Administrador */}
                         <div className="bg-white p-2 rounded-2xl shadow-sm border border-slate-100 flex gap-2 overflow-x-auto no-scrollbar">
                             <button
                                 onClick={() => setActiveAdminCategory("all")}
@@ -458,7 +458,7 @@ export default function AdminDashboard() {
                                     activeAdminCategory === "all" ? "bg-primary text-white shadow-lg shadow-primary/20" : "hover:bg-slate-50 text-slate-500"
                                 )}
                             >
-                                TODOS
+                                TODAS
                             </button>
                             {data.categories.map((cat: Category) => (
                                 <button
@@ -478,7 +478,7 @@ export default function AdminDashboard() {
                             onClick={addProduct}
                             className="w-full border-2 border-dashed border-primary/30 text-primary p-6 rounded-[2.5rem] hover:bg-primary/5 transition-all flex items-center justify-center gap-3 font-black uppercase tracking-widest text-sm"
                         >
-                            <Plus className="w-6 h-6" /> Adicionar em {activeAdminCategory === "all" ? "Geral" : data.categories.find((c: any) => c.id === activeAdminCategory)?.name}
+                            <Plus className="w-6 h-6" /> Añadir en {activeAdminCategory === "all" ? "General" : data.categories.find((c: any) => c.id === activeAdminCategory)?.name}
                         </button>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -487,10 +487,29 @@ export default function AdminDashboard() {
                                 .map((p: Product) => (
                                     <div key={p.id} className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 space-y-4 hover:shadow-xl hover:border-primary/10 transition-all group">
                                         <div className="flex gap-4">
-                                            <div className="w-24 h-24 rounded-3xl overflow-hidden shadow-inner flex-shrink-0 relative group/img">
-                                                <img src={p.image} className="w-full h-full object-cover" alt="" />
-                                                <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/img:opacity-100 cursor-pointer transition-opacity">
-                                                    <Upload className="w-6 h-6 text-white" />
+                                            <div className="flex flex-col items-center gap-2 px-1">
+                                                <div className="w-24 h-24 rounded-3xl overflow-hidden shadow-inner flex-shrink-0 relative group/img">
+                                                    <img src={p.image} className="w-full h-full object-cover" alt="" />
+                                                    <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/img:opacity-100 cursor-pointer transition-opacity">
+                                                        <Upload className="w-6 h-6 text-white" />
+                                                        <input
+                                                            type="file"
+                                                            className="hidden"
+                                                            accept="image/*"
+                                                            onChange={(e) => {
+                                                                const file = e.target.files?.[0];
+                                                                if (file) handleImageUpload(file, 'products', (url) => updateProduct(p.id, 'image', url));
+                                                            }}
+                                                        />
+                                                    </label>
+                                                    {uploading === 'products' && (
+                                                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                                            <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <label className="text-[9px] font-black text-primary cursor-pointer hover:underline uppercase tracking-widest bg-primary/5 px-2 py-1 rounded-md">
+                                                    Cambiar Foto
                                                     <input
                                                         type="file"
                                                         className="hidden"
@@ -501,11 +520,6 @@ export default function AdminDashboard() {
                                                         }}
                                                     />
                                                 </label>
-                                                {uploading === 'products' && (
-                                                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                                                        <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                                                    </div>
-                                                )}
                                             </div>
                                             <div className="flex-1 space-y-3">
                                                 <input
@@ -523,7 +537,7 @@ export default function AdminDashboard() {
                                                             <option key={c.id} value={c.id}>{c.name}</option>
                                                         ))}
                                                     </select>
-                                                    <span className="text-sm font-bold text-slate-400">R$</span>
+                                                    <span className="text-sm font-bold text-slate-400">Gs.</span>
                                                     <input
                                                         type="number"
                                                         value={p.price}
@@ -538,17 +552,17 @@ export default function AdminDashboard() {
                                             value={p.description}
                                             onChange={(e) => updateProduct(p.id, 'description', e.target.value)}
                                             className="w-full bg-slate-50 border-none rounded-2xl p-4 text-sm text-slate-600 min-h-[80px] focus:ring-2 focus:ring-primary/20"
-                                            placeholder="Descrição do produto..."
+                                            placeholder="Descripción del producto..."
                                         />
 
                                         <div className="flex items-center justify-between pt-2">
                                             <div className="flex items-center gap-3">
-                                                <label className="text-xs font-black uppercase text-slate-400">Disponível</label>
+                                                <label className="text-xs font-black uppercase text-slate-400">Disponible</label>
                                                 <input
                                                     type="checkbox"
                                                     checked={p.available}
                                                     onChange={(e) => updateProduct(p.id, 'available', e.target.checked)}
-                                                    className="w-6 h-6 text-primary rounded-lg border-slate-200 focus:ring-primary/20"
+                                                    className="w-6 h-6 text-primary rounded-lg border-slate-200 focus:ring-2 focus:ring-primary/20"
                                                 />
                                             </div>
                                             <button
@@ -569,7 +583,7 @@ export default function AdminDashboard() {
                             onClick={addCategory}
                             className="w-full border-2 border-dashed border-primary/30 text-primary p-6 rounded-[2.5rem] hover:bg-primary/5 transition-all flex items-center justify-center gap-3 font-black uppercase tracking-widest text-sm"
                         >
-                            <Plus className="w-6 h-6" /> Adicionar Categoria
+                            <Plus className="w-6 h-6" /> Añadir Categoría
                         </button>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -600,27 +614,27 @@ export default function AdminDashboard() {
                         <div className="grid gap-6">
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between pl-2">
-                                    <label className="text-xs font-black uppercase text-slate-400 tracking-widest">Nome da Loja</label>
+                                    <label className="text-xs font-black uppercase text-slate-400 tracking-widest">Nombre de la Tienda</label>
                                     <button
                                         onClick={() => {
-                                            if (confirm("Deseja voltar para o nome padrão do Branding?")) {
+                                            if (confirm("¿Desea volver al nombre estándar de Branding?")) {
                                                 setData({ ...data, store: { ...data.store, name: BRANDING.name } });
                                             }
                                         }}
                                         className="text-[10px] text-primary hover:underline font-bold"
                                     >
-                                        Resgatar do Branding
+                                        Rescatar del Branding
                                     </button>
                                 </div>
                                 <input
                                     value={data.store.name}
                                     onChange={(e) => setData({ ...data, store: { ...data.store, name: e.target.value } })}
-                                    placeholder="Digite o nome do restaurante aqui..."
+                                    placeholder="Ingrese el nombre del restaurante aquí..."
                                     className="w-full bg-slate-50 border-2 border-primary/10 rounded-2xl p-5 font-bold text-xl text-primary focus:ring-4 focus:ring-primary/20 focus:bg-white transition-all outline-none"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-black uppercase text-slate-400 tracking-widest pl-2">WhatsApp (com DDD)</label>
+                                <label className="text-xs font-black uppercase text-slate-400 tracking-widest pl-2">WhatsApp (con código de país)</label>
                                 <input
                                     value={data.store.whatsapp}
                                     onChange={(e) => setData({ ...data, store: { ...data.store, whatsapp: e.target.value } })}
@@ -629,21 +643,21 @@ export default function AdminDashboard() {
                             </div>
                             <div className="space-y-2">
                                 <label className="text-xs font-black uppercase text-slate-400 tracking-widest pl-2 flex items-center gap-2">
-                                    <Clock className="w-3 h-3" /> Tempo Médio de Entrega
+                                    <Clock className="w-3 h-3" /> Tiempo Medio de Entrega
                                 </label>
                                 <input
                                     value={data.store.deliveryTime || ''}
                                     onChange={(e) => setData({ ...data, store: { ...data.store, deliveryTime: e.target.value } })}
                                     className="w-full bg-slate-50 border-none rounded-2xl p-5 font-bold text-lg focus:ring-2 focus:ring-primary/20"
-                                    placeholder="Ex: 40-60 min"
+                                    placeholder="Ej: 40-60 min"
                                 />
                             </div>
                             <div className="space-y-2">
                                 <label className="text-xs font-black uppercase text-slate-400 tracking-widest pl-2 flex items-center justify-between">
-                                    <span>URL da Logomarca</span>
+                                    <span>URL del Logotipo</span>
                                     <label className="text-primary cursor-pointer hover:underline flex items-center gap-1 lowercase">
                                         <Upload className="w-3 h-3" />
-                                        {uploading === 'logo' ? 'Enviando...' : 'Fazer Upload'}
+                                        {uploading === 'logo' ? 'Enviando...' : 'Hacer Upload'}
                                         <input
                                             type="file"
                                             className="hidden"
@@ -662,7 +676,7 @@ export default function AdminDashboard() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-black uppercase text-slate-400 tracking-widest pl-2">Endereço</label>
+                                <label className="text-xs font-black uppercase text-slate-400 tracking-widest pl-2">Dirección</label>
                                 <textarea
                                     value={data.store.address}
                                     onChange={(e) => setData({ ...data, store: { ...data.store, address: e.target.value } })}
@@ -671,25 +685,25 @@ export default function AdminDashboard() {
                             </div>
 
                             <div className="space-y-4 pt-4 border-t border-slate-100">
-                                <h3 className="font-bold text-slate-900">Formas de Pagamento</h3>
+                                <h3 className="font-bold text-slate-900">Formas de Pago</h3>
 
                                 <div className="space-y-2">
-                                    <label className="text-xs font-black uppercase text-slate-400 tracking-widest pl-2">Chave PIX (E-mail, CPF ou Telefone)</label>
+                                    <label className="text-xs font-black uppercase text-slate-400 tracking-widest pl-2">Clave de Pago (E-mail, RUT o Teléfono)</label>
                                     <input
                                         value={data.store.pixKey || ''}
                                         onChange={(e) => setData({ ...data, store: { ...data.store, pixKey: e.target.value } })}
-                                        placeholder="Ex: 11999999999"
+                                        placeholder="Ej: 11999999999"
                                         className="w-full bg-slate-50 border-none rounded-2xl p-5 font-bold text-lg focus:ring-2 focus:ring-primary/20"
                                     />
-                                    <p className="text-xs text-slate-400 pl-2">Deixe em branco se não quiser aceitar PIX</p>
+                                    <p className="text-xs text-slate-400 pl-2">Deje en blanco si no desea aceptar transferencias directas</p>
                                 </div>
 
                                 <div className="space-y-2">
                                     <label className="text-xs font-black uppercase text-slate-400 tracking-widest pl-2 flex items-center justify-between">
-                                        <span>QR Code do PIX (Opcional)</span>
+                                        <span>QR Code de Pago (Opcional)</span>
                                         <label className="text-primary cursor-pointer hover:underline flex items-center gap-1 lowercase">
                                             <Upload className="w-3 h-3" />
-                                            {uploading === 'qrcode' ? 'Enviando...' : 'Fazer Upload'}
+                                            {uploading === 'qrcode' ? 'Enviando...' : 'Hacer Upload'}
                                             <input
                                                 type="file"
                                                 className="hidden"
@@ -722,7 +736,7 @@ export default function AdminDashboard() {
                                             onChange={(e) => setData({ ...data, store: { ...data.store, acceptsCard: e.target.checked } })}
                                             className="w-5 h-5 text-primary rounded-lg border-slate-300 focus:ring-primary/20"
                                         />
-                                        <span className="font-bold text-slate-700">Aceitar Cartão (Crédito/Débito)</span>
+                                        <span className="font-bold text-slate-700">Aceptar Tarjeta (Crédito/Débito)</span>
                                     </label>
 
                                     <label className="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl cursor-pointer">
@@ -732,22 +746,21 @@ export default function AdminDashboard() {
                                             onChange={(e) => setData({ ...data, store: { ...data.store, acceptsCash: e.target.checked } })}
                                             className="w-5 h-5 text-primary rounded-lg border-slate-300 focus:ring-primary/20"
                                         />
-                                        <span className="font-bold text-slate-700">Aceitar Dinheiro</span>
+                                        <span className="font-bold text-slate-700">Aceptar Efectivo</span>
                                     </label>
                                 </div>
 
-                                {/* Horário de Funcionamento */}
                                 <div className="space-y-4 pt-4 border-t border-slate-100">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="font-bold text-slate-900">Horário de Funcionamento</h3>
+                                        <h3 className="font-bold text-slate-900">Horario de Funcionamiento</h3>
                                         <Clock className="w-5 h-5 text-slate-400" />
                                     </div>
 
                                     <div className="grid gap-3">
                                         {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => {
                                             const labels: any = {
-                                                monday: 'Segunda', tuesday: 'Terça', wednesday: 'Quarta',
-                                                thursday: 'Quinta', friday: 'Sexta', saturday: 'Sábado', sunday: 'Domingo'
+                                                monday: 'Lunes', tuesday: 'Martes', wednesday: 'Miércoles',
+                                                thursday: 'Jueves', friday: 'Viernes', saturday: 'Sábado', sunday: 'Domingo'
                                             };
                                             const schedule = (data.store.openingHours && data.store.openingHours[day]) || (BRANDING as any).openingHours[day];
                                             return (
@@ -771,7 +784,7 @@ export default function AdminDashboard() {
                                                                 })}
                                                                 className="bg-white border-none rounded-lg p-2 text-xs font-bold focus:ring-2 focus:ring-primary/20"
                                                             />
-                                                            <span className="text-slate-300">até</span>
+                                                            <span className="text-slate-300">hasta</span>
                                                             <input
                                                                 type="time"
                                                                 value={schedule.close}
@@ -789,7 +802,7 @@ export default function AdminDashboard() {
                                                             />
                                                         </div>
                                                     ) : (
-                                                        <span className="flex-1 text-center font-bold text-red-400 text-xs italic">FECHADO O DIA TODO</span>
+                                                        <span className="flex-1 text-center font-bold text-red-400 text-xs italic">CERRADO TODO EL DÍA</span>
                                                     )}
 
                                                     <button
@@ -808,7 +821,7 @@ export default function AdminDashboard() {
                                                             schedule.closed ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
                                                         )}
                                                     >
-                                                        {schedule.closed ? "Abrir" : "Fechar"}
+                                                        {schedule.closed ? "Abrir" : "Cerrar"}
                                                     </button>
                                                 </div>
                                             );
@@ -816,10 +829,10 @@ export default function AdminDashboard() {
                                     </div>
                                 </div>
 
-                                {/* Taxas de Entrega por Bairro */}
+                                {/* Tarifas de Entrega por Barrio */}
                                 <div className="space-y-4 pt-4 border-t border-slate-100">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="font-bold text-slate-900">Taxas de Entrega (Bairros)</h3>
+                                        <h3 className="font-bold text-slate-900">Tarifas de Entrega (Barrios)</h3>
                                         <MapPin className="w-5 h-5 text-slate-400" />
                                     </div>
                                     <div className="grid gap-2">
@@ -835,7 +848,7 @@ export default function AdminDashboard() {
                                                     }}
                                                 />
                                                 <div className="flex items-center bg-white rounded-lg px-2">
-                                                    <span className="text-[10px] font-bold text-slate-400 mr-1">R$</span>
+                                                    <span className="text-[10px] font-bold text-slate-400 mr-1">Gs.</span>
                                                     <input
                                                         type="number"
                                                         className="w-16 bg-white border-none rounded-lg p-2 text-xs font-bold text-right"
@@ -860,26 +873,26 @@ export default function AdminDashboard() {
                                         ))}
                                         <button
                                             onClick={() => {
-                                                const newBairro = { id: Math.random().toString(36).substr(2, 9), name: "Novo Bairro", fee: 0 };
+                                                const newBairro = { id: Math.random().toString(36).substr(2, 9), name: "Nuevo Barrio", fee: 0 };
                                                 setData({ ...data, store: { ...data.store, deliveryFees: [...(data.store.deliveryFees || []), newBairro] } });
                                             }}
                                             className="text-xs font-bold text-primary flex items-center gap-1 p-2 hover:bg-primary/5 rounded-xl w-fit transition-all active:scale-95"
                                         >
-                                            <Plus className="w-4 h-4" /> Adicionar Bairro
+                                            <Plus className="w-4 h-4" /> Añadir Barrio
                                         </button>
                                     </div>
                                 </div>
 
-                                {/* Link de Avaliação */}
+                                {/* Link de Calificación */}
                                 <div className="space-y-2 pt-4 border-t border-slate-100">
                                     <label className="text-xs font-black uppercase text-slate-400 tracking-widest pl-2 flex items-center gap-2">
-                                        <ShoppingCart className="w-3 h-3" /> Link de Avaliação (Google/Outro)
+                                        <ShoppingCart className="w-3 h-3" /> Enlace de Calificación (Google/Otro)
                                     </label>
                                     <input
                                         value={data.store.reviewLink || ''}
                                         onChange={(e) => setData({ ...data, store: { ...data.store, reviewLink: e.target.value } })}
                                         className="w-full bg-slate-50 border-none rounded-2xl p-4 text-xs font-medium focus:ring-2 focus:ring-primary/20"
-                                        placeholder="https://g.page/sua-loja/review"
+                                        placeholder="https://g.page/su-tienda/review"
                                     />
                                 </div>
                             </div>
@@ -890,14 +903,14 @@ export default function AdminDashboard() {
                 {activeTab === 'banners' && (
                     <div className="space-y-6">
                         <div className="grid grid-cols-1 gap-6">
-                            {/* Novo Banner */}
+                            {/* Nuevo Banner */}
                             <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex flex-col items-center justify-center p-8 border-2 border-dashed border-primary/20 gap-4">
                                 <div className="p-4 bg-primary/5 rounded-full">
                                     <Images className="w-8 h-8 text-primary" />
                                 </div>
                                 <div className="text-center">
-                                    <h3 className="font-black text-slate-800">Adicionar Novo Banner</h3>
-                                    <p className="text-sm text-slate-400">Cole a URL da imagem ou faça upload</p>
+                                    <h3 className="font-black text-slate-800">Añadir Nuevo Banner</h3>
+                                    <p className="text-sm text-slate-400">Pegue la URL de la imagen o haga upload</p>
                                 </div>
                                 <div className="flex gap-2 w-full max-w-md">
                                     <input
@@ -912,8 +925,8 @@ export default function AdminDashboard() {
                                             }
                                         }}
                                     />
-                                    <label className="bg-primary text-white px-6 rounded-xl flex items-center justify-center font-bold cursor-pointer hover:bg-primary/90 transition-all">
-                                        Upload
+                                    <label className="bg-primary text-white px-6 rounded-xl flex items-center justify-center font-bold cursor-pointer hover:bg-primary/90 transition-all text-sm uppercase">
+                                        Subir Foto
                                         <input
                                             type="file"
                                             className="hidden"

@@ -9,7 +9,7 @@ export async function POST(request: Request) {
         const file = formData.get('file') as File;
 
         if (!file) {
-            return NextResponse.json({ error: 'Nenhum arquivo enviado' }, { status: 400 });
+            return NextResponse.json({ error: 'No se ha enviado ningún archivo' }, { status: 400 });
         }
 
         const bytes = await file.arrayBuffer();
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}.${fileExt}`;
 
-        // 1. Tenta Upload no Supabase (Nuvem)
+        // 1. Tenta Upload no Supabase (Nube)
         if (supabase) {
             const filePath = `uploads/${fileName}`;
             const { error: uploadError } = await supabase.storage
@@ -29,8 +29,8 @@ export async function POST(request: Request) {
                 });
 
             if (uploadError) {
-                console.error("Erro Supabase:", uploadError);
-                return NextResponse.json({ error: `Erro Supabase: ${uploadError.message}` }, { status: 500 });
+                console.error("Error Supabase:", uploadError);
+                return NextResponse.json({ error: `Error Supabase: ${uploadError.message}` }, { status: 500 });
             }
 
             const { data: { publicUrl } } = supabase.storage
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ url: publicUrl });
         }
 
-        // 2. Fallback para Desenvolvimento Local (Apenas se não houver Supabase)
+        // 2. Fallback para Desarrollo Local (Solo si no hay Supabase)
         if (process.env.NODE_ENV === 'development') {
             const uploadDir = path.join(process.cwd(), 'public', 'uploads');
             if (!fs.existsSync(uploadDir)) {
@@ -54,10 +54,10 @@ export async function POST(request: Request) {
             return NextResponse.json({ url: fileUrl });
         }
 
-        return NextResponse.json({ error: 'Configuração de armazenamento (Supabase) ausente ou inválida.' }, { status: 500 });
+        return NextResponse.json({ error: 'Configuración de almacenamiento (Supabase) ausente o inválida.' }, { status: 500 });
 
     } catch (error: any) {
-        console.error("Erro geral no upload:", error);
-        return NextResponse.json({ error: `Erro interno: ${error.message}` }, { status: 500 });
+        console.error("Error general en el upload:", error);
+        return NextResponse.json({ error: `Error interno: ${error.message}` }, { status: 500 });
     }
 }

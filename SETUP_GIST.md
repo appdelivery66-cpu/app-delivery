@@ -1,35 +1,35 @@
-# Configuração do GitHub Gist para Persistência de Dados
+# Configuración de GitHub Gist para la Persistencia de Datos
 
-Este projeto usa GitHub Gist como backend de armazenamento quando hospedado na Vercel.
+Este proyecto utiliza GitHub Gist como almacenamiento backend cuando se aloja en Vercel.
 
-## Como Configurar:
+## Cómo Configurar:
 
-### 1. Criar um GitHub Token
-1. Acesse: https://github.com/settings/tokens/new
-2. Dê um nome: `Delivery App Storage`
-3. Marque apenas: `gist` (Create gists)
-4. Clique em "Generate token"
-5. **COPIE O TOKEN** (você não vai ver ele de novo!)
+### 1. Crear un Token de GitHub
+1. Acceda a: https://github.com/settings/tokens/new
+2. Déle un nombre: `Delivery App Storage`
+3. Marque solo: `gist` (Create gists)
+4. Haga clic en "Generate token"
+5. **COPIE EL TOKEN** (¡no lo volverá a ver!)
 
-### 2. Criar um Gist
-1. Acesse: https://gist.github.com/
-2. Clique em "+" (New gist)
-3. Nome do arquivo: `data.json`
-4. Cole este conteúdo inicial:
+### 2. Crear un Gist
+1. Acceda a: https://gist.github.com/
+2. Haga clic en "+" (New gist)
+3. Nombre del archivo: `data.json`
+4. Pegue este contenido inicial:
 ```json
 {}
 ```
-5. Escolha "Create secret gist"
-6. **COPIE O ID DO GIST** da URL (ex: `https://gist.github.com/seu-usuario/ABC123` → o ID é `ABC123`)
+5. Elija "Create secret gist"
+6. **COPIE EL ID DEL GIST** de la URL (ej: `https://gist.github.com/su-usuario/ABC123` → el ID es `ABC123`)
 
-### 3. Adicionar na Vercel
-1. Vá em: https://vercel.com/dashboard
-2. Clique no projeto
+### 3. Agregar en Vercel
+1. Vaya a: https://vercel.com/dashboard
+2. Haga clic en el proyecto
 3. Settings → Environment Variables
-4. Adicione:
-   - `GITHUB_TOKEN` = seu token copiado
-   - `GIST_ID` = o ID do gist copiado
-5. Clique em "Save"
-6. Faça um novo deploy (ou espere o automático)
+4. Agregue:
+   - `GITHUB_TOKEN` = su token copiado
+   - `GIST_ID` = el ID del gist copiado
+5. Haga clic en "Save"
+6. Realice un nuevo despliegue (o espere el automático)
 
-Pronto! O admin vai salvar os dados no Gist.
+¡Listo! El administrador guardará los datos en el Gist.
