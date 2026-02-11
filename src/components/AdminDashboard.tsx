@@ -1,19 +1,32 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Save, Plus, Trash2, LayoutDashboard, Utensils, Settings, LogOut, ChevronRight, Upload, ImageIcon, X, Images, ShoppingCart, Clock, MapPin } from 'lucide-react';
+import { Save, Plus, Trash2, LayoutDashboard, Utensils, Settings, LogOut, ChevronRight, Upload, ImageIcon, X, Images, ShoppingCart, Clock, MapPin, Monitor, Search, CreditCard, Banknote, User, Phone, Ticket, BarChart3, PieChart, DollarSign, TrendingUp, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Product, Category, StoreConfig } from '@/lib/data';
 import { BRANDING } from '@/lib/branding';
 
 export default function AdminDashboard() {
     const [data, setData] = useState<any>(null);
-    const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'config' | 'banners' | 'orders'>('orders');
+    const [activeTab, setActiveTab] = useState<'home' | 'orders' | 'products' | 'categories' | 'config' | 'banners' | 'coupons' | 'analytics' | 'pdv'>('home');
     const [selectedOrder, setSelectedOrder] = useState<any>(null);
     const [activeAdminCategory, setActiveAdminCategory] = useState<string>("all");
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState<string | null>(null);
+    const [soundEnabled, setSoundEnabled] = useState(true);
+    const lastOrderCount = React.useRef<number>(0);
+
+    // Estados do Caixa
+    const [cashierModal, setCashierModal] = useState({ show: false, initialValue: 0 });
+
+    // Estados do PDV
+    const [pdvCart, setPdvCart] = useState<any[]>([]);
+    const [pdvSearch, setPdvSearch] = useState("");
+    const [pdvCustomerName, setPdvCustomerName] = useState("");
+    const [pdvCustomerPhone, setPdvCustomerPhone] = useState("");
+    const [pdvPaymentMethod, setPdvPaymentMethod] = useState("Efectivo");
+    const [pdvObservation, setPdvObservation] = useState("");
 
     // Auth State
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -31,16 +44,48 @@ export default function AdminDashboard() {
         }
     };
 
-    const fetchOrders = () => {
-        setLoading(true);
+    const fetchOrders = (isPolling = false) => {
+        if (!isPolling) setLoading(true);
         fetch('/api/data')
             .then(res => res.json())
             .then(json => {
                 setData(json);
-                setLoading(false);
+                if (!isPolling) setLoading(false);
             })
-            .catch(() => setLoading(false));
+            .catch(() => {
+                if (!isPolling) setLoading(false);
+            });
     };
+
+    // Polling de pedidos (cada 30 segs)
+    useEffect(() => {
+        const interval = setInterval(() => {
+            fetchOrders(true);
+        }, 30000);
+        return () => clearInterval(interval);
+    }, []);
+
+    // Monitorar novos pedidos para tocar som
+    useEffect(() => {
+        if (data?.orders?.length > lastOrderCount.current) {
+            if (lastOrderCount.current > 0 && soundEnabled) {
+                try {
+                    const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGGS56+OdTgwOUKXh8LZjHAU7k9nyz3osBSh+zPLaizsKFGCz6OyrWBUIR6Hh8r5sIAUsgs/y2Ik2Bxdlu+vjnU4LDlCl4fC2YxwFO5PZ8s96LAUofszy2os7ChRgs+jsq1gVCEeh4fK+bCAFLILP8tiJNgcXZbvr451OCw5QpeHwtmMcBTuT2fLPeiwFKH7M8tqLOwoUYLPo7KtYFQhHoeHyvmwgBSyCz/LYiTYHF2W76+OdTgsOUKXh8LZjHAU7k9nyz3osBSh+zPLaizsKFGCz6OyrWBUIR6Hh8r5sIAUsgs/y2Ik2Bxdlu+vjnU4LDlCl4fC2YxwFO5PZ8s96LAUofszy2os7ChRgs+jsq1gVCEeh4fK+bCAFLILP8tiJNgcXZbvr451OCw5QpeHwtmMcBTuT2fLPeiwFKH7M8tqLOwoUYLPo7KtYFQhHoeHyvmwgBSyCz/LYiTYHF2W76+OdTgsOUKXh8LZjHAU7k9nyz3osBSh+zPLaizsKFGCz6OyrWBUIR6Hh8r5sIAUsgs/y2Ik2Bxdlu+vjnU4LDlCl4fC2YxwFO5PZ8s96LAUofszy2os7ChRgs+jsq1gVCEeh4fK+bCAFLILP8tiJNgcXZbvr451OCw5QpeHwtmMcBTuT2fLPeiwFKH7M8tqLOwoUYLPo7KtYFQhHoeHyvmwgBSyCz/LYiTYHF2W76+OdTgsOUKXh8LZjHAU7k9nyz3osBSh+zPLaizsKFGCz6OyrWBUIR6Hh8r5sIAUsgs/y2Ik2Bxdlu+vjnU4LDlCl4fC2YxwFO5PZ8s96LAUofszy2os7ChRgs+jsq1gVCEeh4fK+bCAFLILP8tiJNgcXZbvr451OCw5QpeHwtmMcBTuT2fLPeiwFKH7M8tqLOwoUYLPo7KtYFQhHoeHyvmwgBSyCz/LYiTYHF2W76+OdTgsOUKXh8LZjHAU7k9nyz3osBSh+zPLaizsKFGCz6OyrWBUIR6Hh8r5sIAUsgs/y2Ik2Bxdlu+vjnU4LDlCl4fC2YxwFO5PZ8s96LAUofszy2os7ChRgs+jsq1gVCEeh4fK+bCAFLILP8tiJNgcXZbvr451OCw5QpeHwtmMcBTuT2fLPeiwFKH7M8tqLOwoUYLPo7KtYFQhHoeHyvmwgBSyCz/LYiTYHF2W76+OdTgsOUKXh8LZjHAU7k9nyz3osBSh+zPLaizsKFGCz6OyrWBUIR6Hh8r5sIAUsgs/y2Ik2Bxdlu+vjnU4LDlCl4fC2YxwFO5PZ8s96LAUofszy2os7ChRgs+jsq1gVCEeh4fK+bCAFLILP8tiJNgcXZbvr451OCw5QpeHwtmMcBTuT2fLPeiwFKH7M8tqLOwoUYLPo7KtYFQ==');
+                    audio.volume = 0.8;
+                    audio.play().catch(() => {
+                        const notification = document.createElement('div');
+                        notification.style.cssText = 'position:fixed;top:20px;right:20px;background:#E63946;color:white;padding:20px;border-radius:15px;font-weight:bold;z-index:9999;animation:slideIn 0.3s;box-shadow:0 10px 30px rgba(0,0,0,0.3);';
+                        notification.innerHTML = '🔔 ¡NUEVO PEDIDO RECIBIDO!';
+                        document.body.appendChild(notification);
+                        setTimeout(() => notification.remove(), 3000);
+                    });
+                } catch (e) {
+                    console.log("Error de audio:", e);
+                }
+            }
+            lastOrderCount.current = data.orders.length;
+        }
+    }, [data?.orders, soundEnabled]);
 
     useEffect(() => {
         fetchOrders();
@@ -91,6 +136,123 @@ export default function AdminDashboard() {
         } finally {
             setUploading(null);
         }
+    };
+
+
+    const handleOpenCashier = (initialBalance: number) => {
+        const newStatus = {
+            isOpen: true,
+            openingTime: new Date().toLocaleString('es-PY'),
+            initialBalance,
+            currentBalance: initialBalance
+        };
+        const newData = { ...data, store: { ...data.store, cashierStatus: newStatus } };
+        setData(newData);
+        handleSave(newData);
+    };
+
+    const handleCloseCashier = () => {
+        if (confirm("¿Desea realmente cerrar la caja?")) {
+            const newStatus = {
+                ...data.store.cashierStatus,
+                isOpen: false,
+                closingTime: new Date().toLocaleString('es-PY')
+            };
+            const newData = { ...data, store: { ...data.store, cashierStatus: newStatus } };
+            setData(newData);
+            handleSave(newData);
+            alert(`¡Caja cerrada con éxito! Saldo Final: Gs. ${data.store.cashierStatus.currentBalance.toLocaleString('es-PY')}`);
+        }
+    };
+
+    // Funções de Cupom
+    const addCoupon = () => {
+        const newCoupon = { code: "BIENVENIDO", discount: 10, type: 'percent' };
+        setData((prev: any) => ({
+            ...prev,
+            store: { ...prev.store, coupons: [...(prev.store.coupons || []), newCoupon] }
+        }));
+    };
+
+    const updateCoupon = (index: number, field: string, value: any) => {
+        setData((prev: any) => {
+            const newCoupons = [...(prev.store.coupons || [])];
+            newCoupons[index] = { ...newCoupons[index], [field]: value };
+            return { ...prev, store: { ...prev.store, coupons: newCoupons } };
+        });
+    };
+
+    const deleteCoupon = (index: number) => {
+        setData((prev: any) => {
+            const newCoupons = prev.store.coupons.filter((_: any, i: number) => i !== index);
+            return { ...prev, store: { ...prev.store, coupons: newCoupons } };
+        });
+    };
+
+    // Funções do PDV
+    const addToPdvCart = (product: Product) => {
+        setPdvCart(prev => {
+            const existing = prev.find(item => item.id === product.id);
+            if (existing) {
+                return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+            }
+            return [...prev, { ...product, quantity: 1, observation: '' }];
+        });
+    };
+
+    const updatePdvQuantity = (id: string, delta: number) => {
+        setPdvCart(prev => prev.map(item => {
+            if (item.id === id) {
+                const newQty = Math.max(0, item.quantity + delta);
+                return { ...item, quantity: newQty };
+            }
+            return item;
+        }).filter(item => item.quantity > 0));
+    };
+
+    const finishPdvSale = () => {
+        if (pdvCart.length === 0) {
+            alert("¡El carrito está vacío!");
+            return;
+        }
+
+        const total = pdvCart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+        const newOrder = {
+            id: Math.floor(Math.random() * 10000).toString(),
+            date: new Date().toLocaleString('es-PY'),
+            status: 'Entregado', // PDV já sai como entregue/finalizado geralmente, ou pendente se for delivery
+            total: total,
+            payment: pdvPaymentMethod,
+            items: pdvCart.map(item => ({
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price,
+                observation: item.observation
+            })),
+            customer: {
+                name: pdvCustomerName || "Cliente Mostrador",
+                phone: pdvCustomerPhone,
+                address: "Retiro en Local"
+            },
+            type: 'PDV', // Identificador de venda balcão
+            observation: pdvObservation
+        };
+
+        // Atualizar estoque se necessário (se tiver controle de estoque implementado)
+        // Por enquanto apenas salva o pedido
+
+        const newOrders = [newOrder, ...(data.orders || [])];
+        const newData = { ...data, orders: newOrders };
+        setData(newData);
+        handleSave(newData);
+
+        // Limpar PDV
+        setPdvCart([]);
+        setPdvCustomerName("");
+        setPdvCustomerPhone("");
+        setPdvObservation("");
+        alert("¡Venta registrada con éxito!");
     };
 
     const handleSave = async (customData?: any) => {
@@ -200,6 +362,17 @@ export default function AdminDashboard() {
 
                 <nav className="flex flex-col gap-2 flex-1">
                     <button
+                        onClick={() => setActiveTab('home')}
+                        className={cn(
+                            "flex items-center gap-3 p-4 rounded-2xl transition-all font-bold group",
+                            activeTab === 'home' ? "bg-primary text-white shadow-lg shadow-primary/20" : "hover:bg-white/5 opacity-60 hover:opacity-100"
+                        )}
+                    >
+                        <LayoutDashboard className="w-5 h-5" />
+                        Inicio
+                        <ChevronRight className={cn("ml-auto w-4 h-4 transition-transform", activeTab === 'home' ? "rotate-90" : "")} />
+                    </button>
+                    <button
                         onClick={() => setActiveTab('orders')}
                         className={cn(
                             "flex items-center gap-3 p-4 rounded-2xl transition-all font-bold group",
@@ -254,6 +427,39 @@ export default function AdminDashboard() {
                         Banners
                         <ChevronRight className={cn("ml-auto w-4 h-4 transition-transform", activeTab === 'banners' ? "rotate-90" : "")} />
                     </button>
+                    <button
+                        onClick={() => setActiveTab('coupons')}
+                        className={cn(
+                            "flex items-center gap-3 p-4 rounded-2xl transition-all font-bold group",
+                            activeTab === 'coupons' ? "bg-primary text-white shadow-lg shadow-primary/20" : "hover:bg-white/5 opacity-60 hover:opacity-100"
+                        )}
+                    >
+                        <Ticket className="w-5 h-5" />
+                        Cupones
+                        <ChevronRight className={cn("ml-auto w-4 h-4 transition-transform", activeTab === 'coupons' ? "rotate-90" : "")} />
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('analytics')}
+                        className={cn(
+                            "flex items-center gap-3 p-4 rounded-2xl transition-all font-bold group",
+                            activeTab === 'analytics' ? "bg-primary text-white shadow-lg shadow-primary/20" : "hover:bg-white/5 opacity-60 hover:opacity-100"
+                        )}
+                    >
+                        <BarChart3 className="w-5 h-5" />
+                        Reportes
+                        <ChevronRight className={cn("ml-auto w-4 h-4 transition-transform", activeTab === 'analytics' ? "rotate-90" : "")} />
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('pdv')}
+                        className={cn(
+                            "flex items-center gap-3 p-4 rounded-2xl transition-all font-bold group",
+                            activeTab === 'pdv' ? "bg-primary text-white shadow-lg shadow-primary/20" : "hover:bg-white/5 opacity-60 hover:opacity-100"
+                        )}
+                    >
+                        <Monitor className="w-5 h-5" />
+                        Punto de Venta
+                        <ChevronRight className={cn("ml-auto w-4 h-4 transition-transform", activeTab === 'pdv' ? "rotate-90" : "")} />
+                    </button>
                 </nav>
 
                 <button className="flex items-center gap-3 p-4 rounded-2xl opacity-40 hover:opacity-100 hover:bg-red-500/10 text-red-400 font-bold transition-all">
@@ -266,26 +472,94 @@ export default function AdminDashboard() {
                 <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
                     <div>
                         <h2 className="text-3xl font-black text-slate-900 tracking-tight capitalize">
-                            {activeTab === 'orders' ? 'Pedidos Recibidos' : activeTab === 'products' ? 'Gestionar Menú' : activeTab === 'categories' ? 'Gestionar Categorías' : activeTab === 'banners' ? 'Gestionar Banners' : 'Ajustes de la Tienda'}
+                            {activeTab === 'orders' ? 'Pedidos Recibidos' :
+                                activeTab === 'products' ? 'Gestionar Menú' :
+                                    activeTab === 'categories' ? 'Gestionar Categorías' :
+                                        activeTab === 'banners' ? 'Gestionar Banners' :
+                                            activeTab === 'coupons' ? 'Cupones de Descuento' :
+                                                activeTab === 'analytics' ? 'Reportes de Ventas' :
+                                                    activeTab === 'pdv' ? 'Punto de Venta' :
+                                                        activeTab === 'home' ? 'Panel Principal' :
+                                                            'Ajustes de la Tienda'}
                         </h2>
                         <div className="flex items-center gap-2 mt-1">
                             <p className="text-muted-foreground">Administre su tienda en tiempo real.</p>
                             {activeTab === 'orders' && (
-                                <button onClick={fetchOrders} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold hover:bg-primary/20 transition-all uppercase">
+                                <button onClick={() => fetchOrders()} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold hover:bg-primary/20 transition-all uppercase">
                                     🔄 Actualizar Lista
                                 </button>
                             )}
                         </div>
                     </div>
-                    <button
-                        onClick={() => handleSave()}
-                        disabled={saving}
-                        className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-2xl shadow-xl shadow-green-600/20 flex items-center justify-center gap-3 font-bold transition-all active:scale-95 disabled:opacity-50"
-                    >
-                        {saving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <Save className="w-5 h-5" />}
-                        GUARDAR CAMBIOS
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => setSoundEnabled(!soundEnabled)}
+                            className={cn(
+                                "p-4 rounded-2xl shadow-xl transition-all font-bold flex items-center gap-2",
+                                soundEnabled ? "bg-blue-600 text-white shadow-blue-600/20" : "bg-slate-200 text-slate-500"
+                            )}
+                        >
+                            {soundEnabled ? "🔊 Sonido Activado" : "🔇 Sonido Silenciado"}
+                        </button>
+                        <button
+                            onClick={() => {
+                                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGGS56+OdTgwOUKXh8LZjHAU7k9nyz3osBSh+zPLaizsKFGCz6OyrWBUIR6Hh8r5sIAUsgs/y2Ik2Bxdlu+vjnU4LDlCl4fC2YxwFO5PZ8s96LAUofszy2os7ChRgs+jsq1gVCEeh4fK+bCAFLILP8tiJNgcXZbvr451OCw5QpeHwtmMcBTuT2fLPeiwFKH7M8tqLOwoUYLPo7KtYFQhHoeHyvmwgBSyCz/LYiTYHF2W76+OdTgsOUKXh8LZjHAU7k9nyz3osBSh+zPLaizsKFGCz6OyrWBUIR6Hh8r5sIAUsgs/y2Ik2Bxdlu+vjnU4LDlCl4fC2YxwFO5PZ8s96LAUofszy2os7ChRgs+jsq1gVCEeh4fK+bCAFLILP8tiJNgcXZbvr451OCw5QpeHwtmMcBTuT2fLPeiwFKH7M8tqLOwoUYLPo7KtYFQhHoeHyvmwgBSyCz/LYiTYHF2W76+OdTgsOUKXh8LZjHAU7k9nyz3osBSh+zPLaizsKFGCz6OyrWBUIR6Hh8r5sIAUsgs/y2Ik2Bxdlu+vjnU4LDlCl4fC2YxwFO5PZ8s96LAUofszy2os7ChRgs+jsq1gVCEeh4fK+bCAFLILP8tiJNgcXZbvr451OCw5QpeHwtmMcBTuT2fLPeiwFKH7M8tqLOwoUYLPo7KtYFQhHoeHyvmwgBSyCz/LYiTYHF2W76+OdTgsOUKXh8LZjHAU7k9nyz3osBSh+zPLaizsKFGCz6OyrWBUIR6Hh8r5sIAUsgs/y2Ik2Bxdlu+vjnU4LDlCl4fC2YxwFO5PZ8s96LAUofszy2os7ChRgs+jsq1gVCEeh4fK+bCAFLILP8tiJNgcXZbvr451OCw5QpeHwtmMcBTuT2fLPeiwFKH7M8tqLOwoUYLPo7KtYFQhHoeHyvmwgBSyCz/LYiTYHF2W76+OdTgsOUKXh8LZjHAU7k9nyz3osBSh+zPLaizsKFGCz6OyrWBUIR6Hh8r5sIAUsgs/y2Ik2Bxdlu+vjnU4LDlCl4fC2YxwFO5PZ8s96LAUofszy2os7ChRgs+jsq1gVCEeh4fK+bCAFLILP8tiJNgcXZbvr451OCw5QpeHwtmMcBTuT2fLPeiwFKH7M8tqLOwoUYLPo7KtYFQ==');
+                                audio.volume = 0.8;
+                                audio.play();
+                            }}
+                            className="bg-green-600 text-white px-6 py-4 rounded-2xl shadow-xl shadow-green-600/20 font-bold hover:bg-green-700 transition-all"
+                        >
+                            🔔 Probar Sonido
+                        </button>
+                        <button
+                            onClick={() => handleSave()}
+                            disabled={saving}
+                            className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-2xl shadow-xl shadow-green-600/20 flex items-center justify-center gap-3 font-bold transition-all active:scale-95 disabled:opacity-50"
+                        >
+                            {saving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <Save className="w-5 h-5" />}
+                            GUARDAR CAMBIOS
+                        </button>
+                    </div>
                 </header>
+
+                {/* MODAL DE CAIXA */}
+                {cashierModal.show && (
+                    <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+                        <div className="bg-white w-full max-w-sm rounded-[3rem] p-10 shadow-2xl animate-in fade-in zoom-in duration-300">
+                            <h3 className="font-black text-2xl text-slate-800 mb-2 uppercase tracking-tight">Abrir Caja</h3>
+                            <p className="text-slate-500 text-sm mb-6 font-medium">Ingrese el saldo inicial en efectivo.</p>
+
+                            <div className="space-y-4">
+                                <div className="bg-slate-50 p-6 rounded-3xl border-2 border-primary/20">
+                                    <label className="text-[10px] font-black uppercase text-primary mb-2 block">Saldo Inicial (Gs.)</label>
+                                    <input
+                                        type="number"
+                                        autoFocus
+                                        value={cashierModal.initialValue}
+                                        onChange={(e) => setCashierModal({ ...cashierModal, initialValue: parseFloat(e.target.value) || 0 })}
+                                        className="w-full bg-transparent border-none font-black text-3xl text-slate-800 outline-none"
+                                    />
+                                </div>
+
+                                <button
+                                    onClick={() => {
+                                        handleOpenCashier(cashierModal.initialValue);
+                                        setCashierModal({ show: false, initialValue: 0 });
+                                    }}
+                                    className="w-full bg-primary text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/30 transition-all active:scale-95"
+                                >
+                                    Confirmar Apertura
+                                </button>
+                                <button
+                                    onClick={() => setCashierModal({ show: false, initialValue: 0 })}
+                                    className="w-full text-slate-400 py-2 font-bold hover:text-slate-600 transition-colors"
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* EDIÇÃO RÁPIDA DO NOME - LOGO NO TOPO */}
                 <div className="mb-8 bg-primary/5 p-6 rounded-[2.5rem] border-2 border-primary/20">
@@ -293,13 +567,13 @@ export default function AdminDashboard() {
                         <label className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">Nombre de la Aplicación / Restaurante</label>
                         <button
                             onClick={() => {
-                                if (confirm("¿Restaurar nombre por defecto del sistema?")) {
+                                if (confirm("¿Restaurar nombre predeterminado del sistema?")) {
                                     setData({ ...data, store: { ...data.store, name: BRANDING.name } });
                                 }
                             }}
                             className="text-[10px] bg-primary text-white px-3 py-1 rounded-full font-bold hover:scale-105 transition-transform"
                         >
-                            Resetear al Código
+                            Resetear a Código
                         </button>
                     </div>
                     <input
@@ -309,6 +583,143 @@ export default function AdminDashboard() {
                         placeholder="Escriba el nombre aquí..."
                     />
                 </div>
+
+                {activeTab === 'home' && (
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {[
+                                {
+                                    label: 'Abrir/Cerrar Caja', desc: 'Gestionar turno y saldo', icon: <ShoppingCart className="w-8 h-8" />, color: 'bg-emerald-500', action: () => {
+                                        if (data.store.cashierStatus?.isOpen) {
+                                            handleCloseCashier();
+                                        } else {
+                                            setCashierModal({ ...cashierModal, show: true });
+                                        }
+                                    }
+                                },
+                                { label: 'Nuevo Pedido', desc: 'Registrar venta manual (PDV)', icon: <Plus className="w-8 h-8" />, color: 'bg-blue-500', action: () => setActiveTab('pdv') },
+                                { label: 'Gestionar Stock', desc: 'Control de cantidades', icon: <TrendingUp className="w-8 h-8" />, color: 'bg-orange-500', action: () => setActiveTab('products') },
+                                { label: 'Reportes Pro', desc: 'Ventas y rentabilidad', icon: <BarChart3 className="w-8 h-8" />, color: 'bg-slate-800', action: () => setActiveTab('analytics') },
+                            ].map((item, i) => (
+                                <button
+                                    key={i}
+                                    onClick={item.action}
+                                    className="bg-white p-8 rounded-[3rem] shadow-sm border border-slate-100 hover:shadow-xl hover:border-primary/20 transition-all group text-left flex flex-col gap-4"
+                                >
+                                    <div className={`${item.color} w-16 h-16 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-black/10 group-hover:scale-110 transition-transform`}>
+                                        {item.icon}
+                                    </div>
+                                    <div>
+                                        <h3 className="font-black text-slate-800 text-xl uppercase tracking-tighter">{item.label}</h3>
+                                        <p className="text-slate-400 text-sm font-medium">{item.desc}</p>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Status Rápido */}
+                        <div className="bg-slate-900 rounded-[3rem] p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
+                            <div className="flex items-center gap-6">
+                                <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-50">Estado del Sistema</p>
+                                    <h4 className="text-xl font-black uppercase">Tienda Abierta & Caja {data.store.cashierStatus?.isOpen ? 'Abierto' : 'Cerrado'}</h4>
+                                </div>
+                            </div>
+                            <div className="flex flex-wrap items-center justify-center gap-6">
+                                {data.store.cashierStatus?.isOpen && (
+                                    <>
+                                        <div className="text-right">
+                                            <p className="text-[10px] font-black uppercase tracking-widest opacity-50">Saldo en Caja</p>
+                                            <h4 className="text-xl font-black text-green-400">Gs. {data.store.cashierStatus.currentBalance.toLocaleString('es-PY')}</h4>
+                                        </div>
+                                        <div className="w-px h-10 bg-white/10 hidden md:block"></div>
+                                    </>
+                                )}
+                                <div className="text-right">
+                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-50">Ventas Hoy</p>
+                                    <h4 className="text-xl font-black text-primary">Gs. {(data.orders || []).filter((o: any) => o.date.includes(new Date().toLocaleDateString('pt-BR'))).reduce((acc: number, o: any) => acc + o.total, 0).toLocaleString('es-PY')}</h4>
+                                </div>
+                                <div className="w-px h-10 bg-white/10 hidden md:block"></div>
+                                <div className="text-right">
+                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-50">Pendientes</p>
+                                    <h4 className="text-xl font-black text-orange-400">{(data.orders || []).filter((o: any) => o.status === 'Pendente').length}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'coupons' && (
+                    <div className="space-y-6">
+                        <div className="bg-gradient-to-r from-pink-500 to-rose-600 p-8 rounded-[3rem] text-white shadow-2xl flex justify-between items-center">
+                            <div>
+                                <h3 className="text-3xl font-black uppercase tracking-tight mb-2">🎟️ Cupones Activos</h3>
+                                <p className="text-pink-100 font-medium">Gestione las campañas de descuento</p>
+                            </div>
+                            <button onClick={addCoupon} className="bg-white text-pink-600 px-6 py-3 rounded-2xl font-black shadow-lg hover:scale-105 transition-transform">
+                                + Nuevo Cupón
+                            </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {(data.store.coupons || []).map((coupon: any, index: number) => (
+                                <div key={index} className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col gap-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-pink-100 rounded-2xl flex items-center justify-center text-pink-600">
+                                            <Ticket className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Código del Cupón</label>
+                                            <input
+                                                value={coupon.code}
+                                                onChange={(e) => updateCoupon(index, 'code', e.target.value.toUpperCase())}
+                                                className="w-full font-black text-xl text-slate-800 bg-transparent outline-none uppercase placeholder:text-slate-300"
+                                                placeholder="EJ: VERANO2025"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-4">
+                                        <div className="flex-1 bg-slate-50 p-4 rounded-2xl">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase">Descuento</label>
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="number"
+                                                    value={coupon.discount}
+                                                    onChange={(e) => updateCoupon(index, 'discount', parseFloat(e.target.value))}
+                                                    className="w-full bg-transparent font-bold text-lg outline-none"
+                                                />
+                                                <select
+                                                    value={coupon.type}
+                                                    onChange={(e) => updateCoupon(index, 'type', e.target.value)}
+                                                    className="bg-white rounded-lg text-xs font-bold p-1 border-none outline-none"
+                                                >
+                                                    <option value="percent">%</option>
+                                                    <option value="fixed">Gs.</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => deleteCoupon(index)}
+                                            className="bg-red-50 text-red-500 w-14 rounded-2xl flex items-center justify-center hover:bg-red-100 transition-colors"
+                                        >
+                                            <Trash2 className="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'analytics' && (
+                    <div className="bg-white p-20 rounded-[3rem] text-center border border-dashed border-slate-200">
+                        <BarChart3 className="w-20 h-20 text-slate-200 mx-auto mb-6" />
+                        <h3 className="text-2xl font-black text-slate-800 mb-2">Reportes en Construcción</h3>
+                        <p className="text-slate-400">Pronto tendrá gráficos detallados de sus ventas aquí.</p>
+                    </div>
+                )}
 
                 {activeTab === 'orders' && (
                     <div className="space-y-6">
@@ -959,6 +1370,174 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'pdv' && (
+                    <div className="space-y-6">
+                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-8 rounded-[3rem] text-white shadow-2xl">
+                            <h3 className="text-3xl font-black uppercase tracking-tight mb-2">🛒 Punto de Venta (PDV)</h3>
+                            <p className="text-blue-100 font-medium">Registrar ventas directas en mostrador o por teléfono</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* Coluna Esquerda: Produtos */}
+                            <div className="lg:col-span-2 space-y-6">
+                                {/* Busca */}
+                                <div className="relative">
+                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+                                    <input
+                                        type="text"
+                                        placeholder="Buscar productos..."
+                                        value={pdvSearch}
+                                        onChange={(e) => setPdvSearch(e.target.value)}
+                                        className="w-full pl-12 pr-4 py-4 rounded-2xl border-none shadow-sm text-lg font-bold focus:ring-2 focus:ring-blue-500/20 outline-none"
+                                        autoFocus
+                                    />
+                                </div>
+
+                                {/* Grid de Produtos */}
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {data.products
+                                        .filter((p: Product) => p.available && p.name.toLowerCase().includes(pdvSearch.toLowerCase()))
+                                        .map((p: Product) => (
+                                            <button
+                                                key={p.id}
+                                                onClick={() => addToPdvCart(p)}
+                                                className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg hover:border-blue-500/30 hover:-translate-y-1 transition-all text-left group flex flex-col h-full"
+                                            >
+                                                <div className="aspect-square rounded-xl overflow-hidden mb-3 relative">
+                                                    <img src={p.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={p.name} />
+                                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all flex items-center justify-center">
+                                                        <Plus className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transform scale-50 group-hover:scale-100 transition-all" />
+                                                    </div>
+                                                </div>
+                                                <h4 className="font-bold text-slate-800 leading-tight mb-1 line-clamp-2">{p.name}</h4>
+                                                <p className="text-blue-600 font-black mt-auto">Gs. {p.price.toLocaleString('es-PY')}</p>
+                                            </button>
+                                        ))}
+                                </div>
+                            </div>
+
+                            {/* Coluna Direita: Carrinho */}
+                            <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 flex flex-col h-[calc(100vh-140px)] sticky top-6">
+                                <div className="p-6 border-b border-slate-100 bg-slate-50/50 rounded-t-[2.5rem]">
+                                    <h3 className="font-black text-xl flex items-center gap-2 text-slate-800">
+                                        <ShoppingCart className="w-5 h-5" /> Carrito
+                                        <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">{pdvCart.reduce((acc, item) => acc + item.quantity, 0)} items</span>
+                                    </h3>
+                                </div>
+
+                                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                                    {pdvCart.length === 0 ? (
+                                        <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-4">
+                                            <ShoppingCart className="w-16 h-16 opacity-20" />
+                                            <p className="font-medium text-sm">Tu carrito está vacío</p>
+                                        </div>
+                                    ) : (
+                                        pdvCart.map((item) => (
+                                            <div key={item.id} className="flex gap-3 bg-slate-50 p-3 rounded-2xl group">
+                                                <img src={item.image} className="w-12 h-12 rounded-xl object-cover" alt="" />
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex justify-between items-start">
+                                                        <h4 className="font-bold text-sm text-slate-800 truncate pr-2">{item.name}</h4>
+                                                        <p className="font-black text-xs text-slate-600 whitespace-nowrap">
+                                                            Gs. {(item.price * item.quantity).toLocaleString('es-PY')}
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <div className="flex items-center bg-white rounded-lg border border-slate-200">
+                                                            <button
+                                                                onClick={() => updatePdvQuantity(item.id, -1)}
+                                                                className="w-6 h-6 flex items-center justify-center hover:bg-slate-100 text-slate-500 transition-colors"
+                                                            >
+                                                                -
+                                                            </button>
+                                                            <span className="text-xs font-bold w-6 text-center">{item.quantity}</span>
+                                                            <button
+                                                                onClick={() => updatePdvQuantity(item.id, 1)}
+                                                                className="w-6 h-6 flex items-center justify-center hover:bg-slate-100 text-slate-500 transition-colors"
+                                                            >
+                                                                +
+                                                            </button>
+                                                        </div>
+                                                        <input
+                                                            placeholder="Obs..."
+                                                            value={item.observation}
+                                                            onChange={(e) => {
+                                                                setPdvCart(prev => prev.map(i => i.id === item.id ? { ...i, observation: e.target.value } : i));
+                                                            }}
+                                                            className="flex-1 bg-transparent text-[10px] border-b border-transparent focus:border-slate-300 outline-none px-1"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+
+                                <div className="p-6 bg-slate-50 border-t border-slate-100 rounded-b-[2.5rem] space-y-4">
+                                    <div className="space-y-3">
+                                        <div className="flex gap-2">
+                                            <div className="relative flex-1">
+                                                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                                <input
+                                                    placeholder="Nombre del Cliente (Opcional)"
+                                                    value={pdvCustomerName}
+                                                    onChange={(e) => setPdvCustomerName(e.target.value)}
+                                                    className="w-full pl-9 pr-3 py-2 rounded-xl border-none text-xs font-bold focus:ring-2 focus:ring-blue-500/20"
+                                                />
+                                            </div>
+                                            <div className="relative w-1/3">
+                                                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                                <input
+                                                    placeholder="Teléfono"
+                                                    value={pdvCustomerPhone}
+                                                    onChange={(e) => setPdvCustomerPhone(e.target.value)}
+                                                    className="w-full pl-9 pr-3 py-2 rounded-xl border-none text-xs font-bold focus:ring-2 focus:ring-blue-500/20"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-3 gap-2">
+                                            {['Efectivo', 'Tarjeta', 'Transferencia'].map(method => (
+                                                <button
+                                                    key={method}
+                                                    onClick={() => setPdvPaymentMethod(method)}
+                                                    className={cn(
+                                                        "py-2 rounded-xl text-[10px] font-black uppercase transition-all flex flex-col items-center gap-1",
+                                                        pdvPaymentMethod === method
+                                                            ? "bg-slate-800 text-white shadow-lg shadow-slate-800/20 scale-105"
+                                                            : "bg-white text-slate-400 hover:bg-white hover:text-slate-600"
+                                                    )}
+                                                >
+                                                    {method === 'Efectivo' && <Banknote className="w-4 h-4" />}
+                                                    {method === 'Tarjeta' && <CreditCard className="w-4 h-4" />}
+                                                    {method === 'Transferencia' && <Phone className="w-4 h-4" />}
+                                                    {method}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-end justify-between border-t border-slate-200 pt-4">
+                                        <div>
+                                            <p className="text-xs text-slate-400 font-bold uppercase">Total a Pagar</p>
+                                            <p className="text-3xl font-black text-slate-800">
+                                                Gs. {pdvCart.reduce((acc, item) => acc + (item.price * item.quantity), 0).toLocaleString('es-PY')}
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={finishPdvSale}
+                                            disabled={pdvCart.length === 0}
+                                            className="bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-8 py-4 rounded-2xl font-black uppercase tracking-wide shadow-lg shadow-green-500/30 flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
+                                        >
+                                            <Save className="w-5 h-5" /> Finalizar
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
